@@ -101,31 +101,31 @@ X_train, X_test, y_train, y_test = train_test_split(
 def tokens(x):
     return x.split(',')
 
-# # Neural Network MODEL
-# pipe = Pipeline([('vect', CountVectorizer()),
-#                  ('tfidf', TfidfTransformer()),
-#                  ('model', MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2), random_state=1, solver='lbfgs'))])
-
-# # Fitting the model
-# model = pipe.fit(X_train, y_train)
-# # Accuracy
-# prediction = model.predict(X_test)
-# print("accuracy: {}%".format(round(accuracy_score(y_test, prediction)*100, 2)))
-
-
-# Decision Tree MODEL
+# Neural Network MODEL
 pipe = Pipeline([('vect', CountVectorizer()),
                  ('tfidf', TfidfTransformer()),
-                 ('model', DecisionTreeClassifier(criterion='entropy',
-                                                  max_depth=20,
-                                                  splitter='best',
-                                                  random_state=42))])
+                 ('model', MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2), random_state=1, solver='lbfgs'))])
 
 # Fitting the model
 model = pipe.fit(X_train, y_train)
 # Accuracy
 prediction = model.predict(X_test)
 print("accuracy: {}%".format(round(accuracy_score(y_test, prediction)*100, 2)))
+
+
+# # Decision Tree MODEL
+# pipe = Pipeline([('vect', CountVectorizer()),
+#                  ('tfidf', TfidfTransformer()),
+#                  ('model', DecisionTreeClassifier(criterion='entropy',
+#                                                   max_depth=20,
+#                                                   splitter='best',
+#                                                   random_state=42))])
+#
+# # Fitting the model
+# model = pipe.fit(X_train, y_train)
+# # Accuracy
+# prediction = model.predict(X_test)
+# print("accuracy: {}%".format(round(accuracy_score(y_test, prediction)*100, 2)))
 
 # # Naive Bayes MODEL
 # pipe = Pipeline([('vect', CountVectorizer()),
