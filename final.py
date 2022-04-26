@@ -64,14 +64,13 @@ def punctuation_removal(text):
             text = text.replace(ele, "")
     return text
 
-
 data['text'] = data['text'].apply(punctuation_removal)
 
-stop = stopwords.words('english')
-data['text'] = data['text'].apply(lambda x: ' '.join(
-    [word for word in x.split() if word not in (stop)]))
+# stop = stopwords.words('english')
+# data['text'] = data['text'].apply(lambda x: ' '.join(
+#     [word for word in x.split() if word not in (stop)]))
 
-token_space = tokenize.WhitespaceTokenizer()
+# token_space = tokenize.WhitespaceTokenizer()
 
 # counter(data[data["target"] == "true"], "text", 20)
 
