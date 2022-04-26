@@ -19,13 +19,15 @@ import seaborn as sns
 import itertools
 import time
 
+start_time = time.time()
+
 fake = pd.read_csv("archive/Fake.csv")
-true = pd.read_csv("archive/True.csv")
-
 fake['target'] = 'fake'
-true['target'] = 'true'
 
-data = pd.concat([fake, true]).reset_index(drop=True)
+real = pd.read_csv("archive/True.csv")
+real['target'] = 'real'
+
+data = pd.concat([fake, real]).reset_index(drop=True)
 
 data = data.reset_index(drop=True)
 
@@ -101,16 +103,16 @@ X_train, X_test, y_train, y_test = train_test_split(
 def tokens(x):
     return x.split(',')
 
-# # Neural Network MODEL
-# pipe = Pipeline([('vect', CountVectorizer()),
-#                  ('tfidf', TfidfTransformer()),
-#                  ('model', MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2), random_state=1, solver='lbfgs'))])
+# Neural Network MODEL
+pipe = Pipeline([('vect', CountVectorizer()),
+                 ('tfidf', TfidfTransformer()),
+                 ('model', MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2), random_state=1, solver='lbfgs'))])
 
-# # Fitting the model
-# model = pipe.fit(X_train, y_train)
-# # Accuracy
-# prediction = model.predict(X_test)
-# print("accuracy: {}%".format(round(accuracy_score(y_test, prediction)*100, 2)))
+# Fitting the model
+model = pipe.fit(X_train, y_train)
+# Accuracy
+prediction = model.predict(X_test)
+print("accuracy: {}%".format(round(accuracy_score(y_test, prediction)*100, 2)))
 
 
 # Decision Tree MODEL
@@ -127,15 +129,4 @@ model = pipe.fit(X_train, y_train)
 prediction = model.predict(X_test)
 print("accuracy: {}%".format(round(accuracy_score(y_test, prediction)*100, 2)))
 
-# # Naive Bayes MODEL
-# pipe = Pipeline([('vect', CountVectorizer()),
-#                  ('tfidf', TfidfTransformer()),
-#                  ('model', GaussianNB())])
-
-# # MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2), random_state=1, solver='lbfgs')
-
-# # Fitting the model
-# model = pipe.fit(X_train, y_train)
-# # Accuracy
-# prediction = model.predict(X_test)
-# print("accuracy: {}%".format(round(accuracy_score(y_test, prediction)*100, 2)))
+print("--- %s seconds ---" % (time.time() - start_time))
