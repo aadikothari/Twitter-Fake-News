@@ -13,7 +13,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
 from sklearn.metrics import classification_report
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, confusion_matrix
 import numpy as np
 
 import pandas as pd
@@ -56,6 +56,11 @@ data.drop(["title"], axis=1)
 
 # Convert to LOWERCASE
 data['text'] = data['text'].apply(lambda x: x.lower())
+
+# def conv_low(text):
+#     text.lower()
+
+# data['text'] = data['text'].apply(conv_low)
 
 
 def punctuation_removal(text):
@@ -115,7 +120,7 @@ def tokens(x):
 # Vectorizing and applying TF-IDF
 pipe = Pipeline([('vect', CountVectorizer()),
                  ('tfidf', TfidfTransformer()),
-                 ('model', MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2), random_state=1,
+                 ('model', MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2),
                                          solver='lbfgs'))])
 
 # Fitting the model
@@ -135,9 +140,6 @@ pipe = Pipeline([('vect', CountVectorizer()),
                                                   splitter='best',
                                                   random_state=42))])
 
-# cm = metrics.confusion_matrix(y_test, prediction)
-# plot_confusion_matrix(cm, classes=['Fake', 'Real'])
-
 # Fitting the model
 model = pipe.fit(X_train, y_train)
 # Accuracy
@@ -148,3 +150,13 @@ print("F1 Score [Decision Tree]: {}%".format(
     round(f1_score(y_test, prediction, pos_label='fake')*100, 2)))
 
 print("--- %s seconds ---" % (time.time() - start_time))
+
+# cm = metrics.confusion_matrix(y_test, prediction)
+# plot_confusion_matrix(cm, classes=['Fake', 'Real'])
+
+mat = confusion_matrix(y_test, prediction)
+plt.figure(figsize=(3, 3))
+sns.heatmap(mat, annot=True, fmt='d', cmap="gray", cbar=False)
+plt.xlabel('Predicted Label')
+plt.ylabel('True Label')
+plt.show()
