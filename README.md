@@ -15,8 +15,4 @@ STEPS to RUN:
 While running the file, NOTICE 1) Comments. We kept helper methods for some functions from towardsdatascience.com and geeksforgeeks so as to aid us if needed.
 However, those helper functions (if commented) are not used.
 
-Comments explaining the code flowthrough are included.
-
-Our script runs Neural Network and Decision Tree classifers.
-
-My 6-core Intel i7 processor with 16 gigs of RAM and a dedicated NVIDIA GeForce GTX 1650 (4GB GDDR6 memory) ra
+Comments explaining the code flowthrough are included. Our script runs Neural Network and Decision Tree classifers. Libraries used are specified in the requirements.txt file.
