@@ -38,22 +38,26 @@ data = pd.concat([real, fake]).reset_index(drop=True)
 
 # removing unwanted params
 data.drop(["date"], axis=1)
+data.drop(["subject"], axis=1)
 data.drop(["title"], axis=1)
 
+# Convert to LOWERCASE
 data['text'] = data['text'].apply(lambda x: x.lower())
 
 def punctuation_removal(text):
-    all_list = [char for char in text if char not in string.punctuation]
-    clean_str = ''.join(all_list)
-    return clean_str
+    punc = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
+    for ele in text:
+        if ele in punc:
+            text = text.replace(ele, "")
+    return text
 
 
 data['text'] = data['text'].apply(punctuation_removal)
 
-nltk.download('stopwords')
-stop = stopwords.words('english')
-data['text'] = data['text'].apply(lambda x: ' '.join(
-    [word for word in x.split() if word not in (stop)]))
+# nltk.download('stopwords')
+# stop = stopwords.words('english')
+# data['text'] = data['text'].apply(lambda x: ' '.join(
+#     [word for word in x.split() if word not in (stop)]))
 
 token_space = tokenize.WhitespaceTokenizer()
 
@@ -108,6 +112,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 def tokens(x):
     return x.split(',')
+
 
 # Vectorizing and applying TF-IDF
 pipe = Pipeline([('vect', CountVectorizer()),
