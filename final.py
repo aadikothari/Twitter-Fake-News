@@ -1,11 +1,20 @@
-from sklearn.metrics import accuracy_score
+"""
+Machine Learning ECE 4424/CS 4824 Python Script
+Twitter Fake News Detection Algorithm
+Created by: Aadi Kothari, Pradyuman Mehta, Devangini Talwar, Campbell Dalen
+"""
+
+from sklearn.metrics import accuracy_score, f1_score
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.naive_bayes import GaussianNB
+from sklearn import metrics
+from sklearn.metrics import classification_report
+from sklearn.metrics import accuracy_score
+import numpy as np
 
 import pandas as pd
 import string
@@ -19,49 +28,50 @@ import seaborn as sns
 import itertools
 import time
 
+
+# Start runtime counter
+start_time = time.time()
+
+"""
+DATA PREPROCESSING: Cleaning the data for feeding to machine
+Aadi Kothari
+"""
+
+# Read fake news
 fake = pd.read_csv("archive/Fake.csv")
-true = pd.read_csv("archive/True.csv")
-
 fake['target'] = 'fake'
-true['target'] = 'true'
 
-data = pd.concat([fake, true]).reset_index(drop=True)
+# Read real news
+real = pd.read_csv("archive/True.csv")
+real['target'] = 'real'
 
-data = data.reset_index(drop=True)
+# real + fake TOTAL data combined
+# Alternative to deprecating df.append method
+data = pd.concat([real, fake]).reset_index(drop=True)
 
-data.drop(["date"], axis=1, inplace=True)
-data.drop(["title"], axis=1, inplace=True)
+# removing unwanted params
+data.drop(["date"], axis=1)
+data.drop(["subject"], axis=1)
+data.drop(["title"], axis=1)
 
+# Convert to LOWERCASE
 data['text'] = data['text'].apply(lambda x: x.lower())
 
 def punctuation_removal(text):
-    all_list = [char for char in text if char not in string.punctuation]
-    clean_str = ''.join(all_list)
-    return clean_str
+    punc = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
+    for ele in text:
+        if ele in punc:
+            text = text.replace(ele, "")
+    return text
 
 
 data['text'] = data['text'].apply(punctuation_removal)
 
-nltk.download('stopwords')
 stop = stopwords.words('english')
 data['text'] = data['text'].apply(lambda x: ' '.join(
     [word for word in x.split() if word not in (stop)]))
 
 token_space = tokenize.WhitespaceTokenizer()
-
-
-def counter(text, column_text, quantity):
-    all_words = ' '.join([text for text in text[column_text]])
-    token_phrase = token_space.tokenize(all_words)
-    frequency = nltk.FreqDist(token_phrase)
-    df_frequency = pd.DataFrame({"Word": list(frequency.keys()),
-                                 "Frequency": list(frequency.values())})
-    df_frequency = df_frequency.nlargest(columns="Frequency", n=quantity)
-    plt.figure(figsize=(12, 8))
-    ax = sns.barplot(data=df_frequency, x="Word", y="Frequency", color='blue')
-    ax.set(ylabel="Count")
-    plt.xticks(rotation='vertical')
-    plt.show()
 
 # counter(data[data["target"] == "true"], "text", 20)
 
@@ -89,6 +99,8 @@ def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix'
                  horizontalalignment="center",
                  color="white" if cm[i, j] > thresh else "black")
 
+    plt.show()
+
 
 plt.tight_layout()
 plt.ylabel('True label')
@@ -101,41 +113,36 @@ X_train, X_test, y_train, y_test = train_test_split(
 def tokens(x):
     return x.split(',')
 
-# Neural Network MODEL
+
+# Vectorizing and applying TF-IDF
 pipe = Pipeline([('vect', CountVectorizer()),
                  ('tfidf', TfidfTransformer()),
-                 ('model', MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2), random_state=1, solver='lbfgs'))])
+                 ('model', MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2), random_state=1,
+                                         solver='lbfgs'))])
 
 # Fitting the model
 model = pipe.fit(X_train, y_train)
 # Accuracy
 prediction = model.predict(X_test)
-print("accuracy: {}%".format(round(accuracy_score(y_test, prediction)*100, 2)))
+print("Accuracy [Neural Network]: {}%".format(round(accuracy_score(y_test, prediction)*100, 2)))
+print("F1 Score [Neural Network]: {}%".format(round(f1_score(y_test, prediction, pos_label='fake')*100, 2)))
 
+# Decision Tree MODEL
+pipe = Pipeline([('vect', CountVectorizer()),
+                 ('tfidf', TfidfTransformer()),
+                 ('model', DecisionTreeClassifier(criterion='entropy',
+                                                  max_depth=20,
+                                                  splitter='best',
+                                                  random_state=42))])
 
-# # Decision Tree MODEL
-# pipe = Pipeline([('vect', CountVectorizer()),
-#                  ('tfidf', TfidfTransformer()),
-#                  ('model', DecisionTreeClassifier(criterion='entropy',
-#                                                   max_depth=20,
-#                                                   splitter='best',
-#                                                   random_state=42))])
-#
-# # Fitting the model
-# model = pipe.fit(X_train, y_train)
-# # Accuracy
-# prediction = model.predict(X_test)
-# print("accuracy: {}%".format(round(accuracy_score(y_test, prediction)*100, 2)))
+# cm = metrics.confusion_matrix(y_test, prediction)
+# plot_confusion_matrix(cm, classes=['Fake', 'Real'])
 
-# # Naive Bayes MODEL
-# pipe = Pipeline([('vect', CountVectorizer()),
-#                  ('tfidf', TfidfTransformer()),
-#                  ('model', GaussianNB())])
+# Fitting the model
+model = pipe.fit(X_train, y_train)
+# Accuracy
+prediction = model.predict(X_test)
+print("Accuracy [Decision Tree]: {}%".format(round(accuracy_score(y_test, prediction)*100, 2)))
+print("F1 Score [Decision Tree]: {}%".format(round(f1_score(y_test, prediction, pos_label='fake')*100, 2)))
 
-# # MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2), random_state=1, solver='lbfgs')
-
-# # Fitting the model
-# model = pipe.fit(X_train, y_train)
-# # Accuracy
-# prediction = model.predict(X_test)
-# print("accuracy: {}%".format(round(accuracy_score(y_test, prediction)*100, 2)))
+print("--- %s seconds ---" % (time.time() - start_time))
