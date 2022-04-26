@@ -4,7 +4,7 @@ Twitter Fake News Detection Algorithm
 Created by: Aadi Kothari, Pradyuman Mehta, Devangini Talwar, Campbell Dalen
 """
 
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, f1_score
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.pipeline import Pipeline
@@ -57,12 +57,14 @@ data.drop(["title"], axis=1)
 # Convert to LOWERCASE
 data['text'] = data['text'].apply(lambda x: x.lower())
 
+
 def punctuation_removal(text):
     punc = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
     for ele in text:
         if ele in punc:
             text = text.replace(ele, "")
     return text
+
 
 data['text'] = data['text'].apply(punctuation_removal)
 
@@ -73,8 +75,6 @@ data['text'] = data['text'].apply(punctuation_removal)
 # token_space = tokenize.WhitespaceTokenizer()
 
 # counter(data[data["target"] == "true"], "text", 20)
-
-# Function to plot the confusion matrix (code from https://scikit-learn.org/stable/auto_examples/model_selection/plot_confusion_matrix.html)
 
 
 def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):
@@ -98,12 +98,11 @@ def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix'
                  horizontalalignment="center",
                  color="white" if cm[i, j] > thresh else "black")
 
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
     plt.show()
 
-
-plt.tight_layout()
-plt.ylabel('True label')
-plt.xlabel('Predicted label')
 
 X_train, X_test, y_train, y_test = train_test_split(
     data['text'], data.target, test_size=0.3, random_state=1)
@@ -123,8 +122,10 @@ pipe = Pipeline([('vect', CountVectorizer()),
 model = pipe.fit(X_train, y_train)
 # Accuracy
 prediction = model.predict(X_test)
-print("Accuracy [Neural Network]: {}%".format(round(accuracy_score(y_test, prediction)*100, 2)))
-
+print("Accuracy [Neural Network]: {}%".format(
+    round(accuracy_score(y_test, prediction)*100, 2)))
+print("F1 Score [Neural Network]: {}%".format(
+    round(f1_score(y_test, prediction, pos_label='fake')*100, 2)))
 
 # Decision Tree MODEL
 pipe = Pipeline([('vect', CountVectorizer()),
@@ -141,6 +142,9 @@ pipe = Pipeline([('vect', CountVectorizer()),
 model = pipe.fit(X_train, y_train)
 # Accuracy
 prediction = model.predict(X_test)
-print("Accuracy [Decision Tree]: {}%".format(round(accuracy_score(y_test, prediction)*100, 2)))
+print("Accuracy [Decision Tree]: {}%".format(
+    round(accuracy_score(y_test, prediction)*100, 2)))
+print("F1 Score [Decision Tree]: {}%".format(
+    round(f1_score(y_test, prediction, pos_label='fake')*100, 2)))
 
 print("--- %s seconds ---" % (time.time() - start_time))
