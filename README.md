@@ -15,6 +15,8 @@ Our version of code was ran on Python 3.10.0 and pip 22.0.4
 4) RUN the command _**'python final.py' // 'python3 final.py'**_ or run the file using an IDE interpreter
 5) At the very bottom, the confusion matrix for the Decision Tree model will be commented out, but feel free to uncomment to check for accuracy of the model. This can be moved a notch above to measure the confusion matrix for the Neural Network model
 
+Line 24 and 25 are only used one-time. It is recommended you comment out the line after first run and the NLP most repeated words would have been downloaded already from the NLTK dependency. This will end up improving run-time. Comments are included for the same
+
 While running the file, NOTICE Comments. The archive/ folder contains the dataset for the Fake and Real news that our model is trained on.
 
 Comments explaining the code flowthrough are included. Our script runs Neural Network and Decision Tree classifers. Libraries used are specified in the requirements.txt file.
