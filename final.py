@@ -11,7 +11,10 @@ from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split
+from sklearn import metrics
 from sklearn.metrics import classification_report
+from sklearn.metrics import accuracy_score
+import numpy as np
 
 import pandas as pd
 import string
@@ -64,7 +67,6 @@ def punctuation_removal(text):
 
 data['text'] = data['text'].apply(punctuation_removal)
 
-nltk.download('stopwords')
 stop = stopwords.words('english')
 data['text'] = data['text'].apply(lambda x: ' '.join(
     [word for word in x.split() if word not in (stop)]))
@@ -96,6 +98,8 @@ def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix'
         plt.text(j, i, cm[i, j],
                  horizontalalignment="center",
                  color="white" if cm[i, j] > thresh else "black")
+
+    plt.show()
 
 
 plt.tight_layout()
@@ -131,7 +135,8 @@ pipe = Pipeline([('vect', CountVectorizer()),
                                                   splitter='best',
                                                   random_state=42))])
 
-# MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2), random_state=1, solver='lbfgs')
+# cm = metrics.confusion_matrix(y_test, prediction)
+# plot_confusion_matrix(cm, classes=['Fake', 'Real'])
 
 # Fitting the model
 model = pipe.fit(X_train, y_train)
@@ -140,6 +145,3 @@ prediction = model.predict(X_test)
 print("Accuracy [Decision Tree]: {}%".format(round(accuracy_score(y_test, prediction)*100, 2)))
 
 print("--- %s seconds ---" % (time.time() - start_time))
-
-print("Training Results:\n")
-print(classification_report(y_test, prediction))
