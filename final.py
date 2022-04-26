@@ -19,20 +19,26 @@ import seaborn as sns
 import itertools
 import time
 
+import csv
+
+# Start runtime counter
 start_time = time.time()
 
+# Read fake news
 fake = pd.read_csv("archive/Fake.csv")
 fake['target'] = 'fake'
 
+# Read real news
 real = pd.read_csv("archive/True.csv")
 real['target'] = 'real'
 
-data = pd.concat([fake, real]).reset_index(drop=True)
+# real + fake TOTAL data combined
+# Alternative to deprecating df.append method
+data = pd.concat([real, fake]).reset_index(drop=True)
 
-data = data.reset_index(drop=True)
-
-data.drop(["date"], axis=1, inplace=True)
-data.drop(["title"], axis=1, inplace=True)
+# removing unwanted params
+data.drop(["date"], axis=1)
+data.drop(["title"], axis=1)
 
 data['text'] = data['text'].apply(lambda x: x.lower())
 
@@ -103,10 +109,11 @@ X_train, X_test, y_train, y_test = train_test_split(
 def tokens(x):
     return x.split(',')
 
-# Neural Network MODEL
+# Vectorizing and applying TF-IDF
 pipe = Pipeline([('vect', CountVectorizer()),
                  ('tfidf', TfidfTransformer()),
-                 ('model', MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2), random_state=1, solver='lbfgs'))])
+                 ('model', MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2), random_state=1,
+                                         solver='lbfgs'))])
 
 # Fitting the model
 model = pipe.fit(X_train, y_train)
@@ -123,10 +130,10 @@ pipe = Pipeline([('vect', CountVectorizer()),
                                                   splitter='best',
                                                   random_state=42))])
 
+# MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2), random_state=1, solver='lbfgs')
+
 # Fitting the model
 model = pipe.fit(X_train, y_train)
 # Accuracy
 prediction = model.predict(X_test)
 print("accuracy: {}%".format(round(accuracy_score(y_test, prediction)*100, 2)))
-
-print("--- %s seconds ---" % (time.time() - start_time))
