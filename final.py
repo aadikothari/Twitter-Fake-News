@@ -100,7 +100,7 @@ print("F1 Score [Neural Network]: {}%".format(
 # (PLACE CONFUSION MATRIX HERE TO CHECK FOR NEURAL NETWORK MODEL)
 
 # Decision Tree MODEL
-pipe = Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('model', DecisionTreeClassifier(criterion='entropy', max_depth=20, splitter='best', random_state=42))])
+pipe = Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('model', DecisionTreeClassifier(criterion='gini', max_depth=15, splitter='random', random_state=80))])
 
 model = pipe.fit(X_train, y_train)
 prediction = model.predict(X_test)
