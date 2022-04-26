@@ -1,3 +1,9 @@
+"""
+Machine Learning ECE 4424/CS 4824 Python Script
+Twitter Fake News Detection Algorithm
+Created by: Aadi Kothari, Pradyuman Mehta, Devangini Talwar, Campbell Dalen
+"""
+
 from sklearn.metrics import accuracy_score
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import CountVectorizer
@@ -5,7 +11,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import classification_report
 
 import pandas as pd
 import string
@@ -19,10 +25,14 @@ import seaborn as sns
 import itertools
 import time
 
-import csv
 
 # Start runtime counter
 start_time = time.time()
+
+"""
+DATA PREPROCESSING: Cleaning the data for feeding to machine
+Aadi Kothari
+"""
 
 # Read fake news
 fake = pd.read_csv("archive/Fake.csv")
@@ -54,26 +64,12 @@ def punctuation_removal(text):
 
 data['text'] = data['text'].apply(punctuation_removal)
 
-# nltk.download('stopwords')
-# stop = stopwords.words('english')
-# data['text'] = data['text'].apply(lambda x: ' '.join(
-#     [word for word in x.split() if word not in (stop)]))
+nltk.download('stopwords')
+stop = stopwords.words('english')
+data['text'] = data['text'].apply(lambda x: ' '.join(
+    [word for word in x.split() if word not in (stop)]))
 
 token_space = tokenize.WhitespaceTokenizer()
-
-
-def counter(text, column_text, quantity):
-    all_words = ' '.join([text for text in text[column_text]])
-    token_phrase = token_space.tokenize(all_words)
-    frequency = nltk.FreqDist(token_phrase)
-    df_frequency = pd.DataFrame({"Word": list(frequency.keys()),
-                                 "Frequency": list(frequency.values())})
-    df_frequency = df_frequency.nlargest(columns="Frequency", n=quantity)
-    plt.figure(figsize=(12, 8))
-    ax = sns.barplot(data=df_frequency, x="Word", y="Frequency", color='blue')
-    ax.set(ylabel="Count")
-    plt.xticks(rotation='vertical')
-    plt.show()
 
 # counter(data[data["target"] == "true"], "text", 20)
 
@@ -124,7 +120,7 @@ pipe = Pipeline([('vect', CountVectorizer()),
 model = pipe.fit(X_train, y_train)
 # Accuracy
 prediction = model.predict(X_test)
-print("accuracy: {}%".format(round(accuracy_score(y_test, prediction)*100, 2)))
+print("Accuracy [Neural Network]: {}%".format(round(accuracy_score(y_test, prediction)*100, 2)))
 
 
 # Decision Tree MODEL
@@ -141,4 +137,9 @@ pipe = Pipeline([('vect', CountVectorizer()),
 model = pipe.fit(X_train, y_train)
 # Accuracy
 prediction = model.predict(X_test)
-print("accuracy: {}%".format(round(accuracy_score(y_test, prediction)*100, 2)))
+print("Accuracy [Decision Tree]: {}%".format(round(accuracy_score(y_test, prediction)*100, 2)))
+
+print("--- %s seconds ---" % (time.time() - start_time))
+
+print("Training Results:\n")
+print(classification_report(y_test, prediction))
