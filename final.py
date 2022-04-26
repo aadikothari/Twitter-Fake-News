@@ -4,6 +4,7 @@ Twitter Fake News Detection Algorithm
 Created by: Aadi Kothari, Pradyuman Mehta, Devangini Talwar, Campbell Dalen
 """
 
+# Imports for dependencies and libraries
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import CountVectorizer
@@ -49,7 +50,7 @@ real['target'] = 'real'
 # Alternative to deprecating df.append method
 data = pd.concat([real, fake]).reset_index(drop=True)
 
-# removing unwanted params
+# removing unwanted params from dataset
 data.drop(["date"], axis=1)
 data.drop(["subject"], axis=1)
 data.drop(["title"], axis=1)
@@ -57,12 +58,7 @@ data.drop(["title"], axis=1)
 # Convert to LOWERCASE
 data['text'] = data['text'].apply(lambda x: x.lower())
 
-# def conv_low(text):
-#     text.lower()
-
-# data['text'] = data['text'].apply(conv_low)
-
-
+# Remove unwanted puncutations
 def punctuation_removal(text):
     punc = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
     for ele in text:
@@ -71,8 +67,16 @@ def punctuation_removal(text):
     return text
 
 
+# Applying that to the current data
 data['text'] = data['text'].apply(punctuation_removal)
 
+"""
+DATA EXPLORATION/PROCESSING
+"""
+
+# [DO NOT REMOVE]
+# Simple NLP stopwords functionality to remove filler words
+# Increases accuracy and reduces time
 stop = stopwords.words('english')
 data['text'] = data['text'].apply(lambda x: ' '.join(
     [word for word in x.split() if word not in (stop)]))
@@ -81,23 +85,27 @@ X_train, X_test, y_train, y_test = train_test_split(
     data['text'], data.target, test_size=0.3, random_state=1)
 
 
-def tokens(x):
-    return x.split(',')
+"""
+MODELS and EVALUATION METRICS
+"""
 
-
+# NEURAL NETWORK MODEL
 pipe = Pipeline([('vect', CountVectorizer()),
                  ('tfidf', TfidfTransformer()),
                  ('model', MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2), random_state=1,
                                          solver='lbfgs'))])
 
-# Fitting the model
 model = pipe.fit(X_train, y_train)
-# Accuracy
 prediction = model.predict(X_test)
+
+# ACCURACY
 print("Accuracy [Neural Network]: {}%".format(
     round(accuracy_score(y_test, prediction)*100, 2)))
+# F1 SCORE
 print("F1 Score [Neural Network]: {}%".format(
     round(f1_score(y_test, prediction, pos_label='fake')*100, 2)))
+
+# (PLACE CONFUSION MATRIX HERE TO CHECK FOR NEURAL NETWORK MODEL)
 
 # Decision Tree MODEL
 pipe = Pipeline([('vect', CountVectorizer()),
@@ -107,25 +115,23 @@ pipe = Pipeline([('vect', CountVectorizer()),
                                                   splitter='best',
                                                   random_state=42))])
 
-# Fitting the model
 model = pipe.fit(X_train, y_train)
-# Accuracy
 prediction = model.predict(X_test)
+
+# ACCURACY
 print("Accuracy [Decision Tree]: {}%".format(
     round(accuracy_score(y_test, prediction)*100, 2)))
+#F1 SCORE
 print("F1 Score [Decision Tree]: {}%".format(
     round(f1_score(y_test, prediction, pos_label='fake')*100, 2)))
 
-print("--- %s seconds ---" % (time.time() - start_time))
+# RUNTIME Calculation
+print("--- RUNTIME: %s seconds ---" % (time.time() - start_time))
 
-# cm = metrics.confusion_matrix(y_test, prediction)
-# plot_confusion_matrix(cm, classes=['Fake', 'Real'])
-
-
-# CONFUSION MATRIX
-mat = confusion_matrix(y_test, prediction)
-plt.figure(figsize=(3, 3))
-sns.heatmap(mat, annot=True, fmt='d', cmap="gray", cbar=False)
-plt.xlabel('Predicted Label')
-plt.ylabel('True Label')
-plt.show()
+# # CONFUSION MATRIX (uncomment if needed)
+# mat = confusion_matrix(y_test, prediction)
+# plt.figure(figsize=(3, 3))
+# sns.heatmap(mat, annot=True, fmt='d', cmap="gray", cbar=False)
+# plt.xlabel('Predicted Label')
+# plt.ylabel('True Label')
+# plt.show()
