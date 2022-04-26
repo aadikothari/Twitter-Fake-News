@@ -1,21 +1,23 @@
-from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeClassifier
-from nltk.corpus import stopwords
+from sklearn.neural_network import MLPClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+
 import pandas as pd
-from sklearn.utils import shuffle
 import string
+
 import nltk
 from nltk import tokenize
+from nltk.corpus import stopwords
+
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn import metrics
 import itertools
-from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import TfidfVectorizer
+import time
 
 fake = pd.read_csv("archive/Fake.csv")
 true = pd.read_csv("archive/True.csv")
@@ -32,7 +34,6 @@ data.drop(["title"], axis=1, inplace=True)
 
 data['text'] = data['text'].apply(lambda x: x.lower())
 
-
 def punctuation_removal(text):
     all_list = [char for char in text if char not in string.punctuation]
     clean_str = ''.join(all_list)
@@ -45,14 +46,6 @@ nltk.download('stopwords')
 stop = stopwords.words('english')
 data['text'] = data['text'].apply(lambda x: ' '.join(
     [word for word in x.split() if word not in (stop)]))
-
-# print(data.groupby(['subject'])['text'].count())
-# data.groupby(['subject'])['text'].count().plot(kind="bar")
-# plt.show()
-
-# print(data.groupby(['target'])['text'].count())
-# data.groupby(['target'])['text'].count().plot(kind="bar")
-# plt.show()
 
 token_space = tokenize.WhitespaceTokenizer()
 
@@ -108,11 +101,10 @@ X_train, X_test, y_train, y_test = train_test_split(
 def tokens(x):
     return x.split(',')
 
-# # Vectorizing and applying TF-IDF
+# # Neural Network MODEL
 # pipe = Pipeline([('vect', CountVectorizer()),
 #                  ('tfidf', TfidfTransformer()),
-#                  ('model', MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2), random_state=1,
-#                                          solver='lbfgs'))])
+#                  ('model', MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2), random_state=1, solver='lbfgs'))])
 
 # # Fitting the model
 # model = pipe.fit(X_train, y_train)
@@ -129,10 +121,21 @@ pipe = Pipeline([('vect', CountVectorizer()),
                                                   splitter='best',
                                                   random_state=42))])
 
-# MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2), random_state=1, solver='lbfgs')
-
 # Fitting the model
 model = pipe.fit(X_train, y_train)
 # Accuracy
 prediction = model.predict(X_test)
 print("accuracy: {}%".format(round(accuracy_score(y_test, prediction)*100, 2)))
+
+# # Naive Bayes MODEL
+# pipe = Pipeline([('vect', CountVectorizer()),
+#                  ('tfidf', TfidfTransformer()),
+#                  ('model', GaussianNB())])
+
+# # MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2), random_state=1, solver='lbfgs')
+
+# # Fitting the model
+# model = pipe.fit(X_train, y_train)
+# # Accuracy
+# prediction = model.predict(X_test)
+# print("accuracy: {}%".format(round(accuracy_score(y_test, prediction)*100, 2)))
