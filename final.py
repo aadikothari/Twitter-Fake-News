@@ -21,6 +21,8 @@ import pandas as pd
 import string
 
 import nltk
+# Need it only ONE-TIME. Remove after first use.
+nltk.download('stopwords')
 from nltk import tokenize
 from nltk.corpus import stopwords
 
