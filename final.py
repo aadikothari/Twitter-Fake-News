@@ -82,31 +82,31 @@ data['text'] = data['text'].apply(punctuation_removal)
 # counter(data[data["target"] == "true"], "text", 20)
 
 
-def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):
+# def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):
 
-    plt.imshow(cm, interpolation='nearest', cmap=cmap)
-    plt.title(title)
-    plt.colorbar()
-    tick_marks = np.arange(len(classes))
-    plt.xticks(tick_marks, classes, rotation=45)
-    plt.yticks(tick_marks, classes)
+#     plt.imshow(cm, interpolation='nearest', cmap=cmap)
+#     plt.title(title)
+#     plt.colorbar()
+#     tick_marks = np.arange(len(classes))
+#     plt.xticks(tick_marks, classes, rotation=45)
+#     plt.yticks(tick_marks, classes)
 
-    if normalize:
-        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-        print("Normalized confusion matrix")
-    else:
-        print('Confusion matrix, without normalization')
+#     if normalize:
+#         cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+#         print("Normalized confusion matrix")
+#     else:
+#         print('Confusion matrix, without normalization')
 
-    thresh = cm.max() / 2.
-    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        plt.text(j, i, cm[i, j],
-                 horizontalalignment="center",
-                 color="white" if cm[i, j] > thresh else "black")
+#     thresh = cm.max() / 2.
+#     for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+#         plt.text(j, i, cm[i, j],
+#                  horizontalalignment="center",
+#                  color="white" if cm[i, j] > thresh else "black")
 
-    plt.tight_layout()
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')
-    plt.show()
+#     plt.tight_layout()
+#     plt.ylabel('True label')
+#     plt.xlabel('Predicted label')
+#     plt.show()
 
 
 X_train, X_test, y_train, y_test = train_test_split(
@@ -117,7 +117,6 @@ def tokens(x):
     return x.split(',')
 
 
-# Vectorizing and applying TF-IDF
 pipe = Pipeline([('vect', CountVectorizer()),
                  ('tfidf', TfidfTransformer()),
                  ('model', MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2),
@@ -154,9 +153,11 @@ print("--- %s seconds ---" % (time.time() - start_time))
 # cm = metrics.confusion_matrix(y_test, prediction)
 # plot_confusion_matrix(cm, classes=['Fake', 'Real'])
 
-mat = confusion_matrix(y_test, prediction)
-plt.figure(figsize=(3, 3))
-sns.heatmap(mat, annot=True, fmt='d', cmap="gray", cbar=False)
-plt.xlabel('Predicted Label')
-plt.ylabel('True Label')
-plt.show()
+
+# CONFUSION MATRIX
+# mat = confusion_matrix(y_test, prediction)
+# plt.figure(figsize=(3, 3))
+# sns.heatmap(mat, annot=True, fmt='d', cmap="gray", cbar=False)
+# plt.xlabel('Predicted Label')
+# plt.ylabel('True Label')
+# plt.show()
