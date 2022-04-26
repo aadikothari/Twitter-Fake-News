@@ -86,7 +86,7 @@ MODELS and EVALUATION METRICS
 """
 
 # NEURAL NETWORK MODEL
-pipe = Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('model', MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2), random_state=1, solver='lbfgs'))])
+pipe = Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('model', MLPClassifier(alpha=1e-09, hidden_layer_sizes=(5, 5), random_state=1, solver='adam'))])
 model = pipe.fit(X_train, y_train)
 prediction = model.predict(X_test)
 
