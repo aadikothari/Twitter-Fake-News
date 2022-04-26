@@ -118,9 +118,6 @@ print("F1 Score [Decision Tree]: {}%".format(
 
 print("--- %s seconds ---" % (time.time() - start_time))
 
-# cm = metrics.confusion_matrix(y_test, prediction)
-# plot_confusion_matrix(cm, classes=['Fake', 'Real'])
-
 
 # CONFUSION MATRIX
 mat = confusion_matrix(y_test, prediction)
