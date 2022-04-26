@@ -11,6 +11,7 @@ import pandas as pd
 import string
 
 import nltk
+nltk.download('stopwords')
 from nltk import tokenize
 from nltk.corpus import stopwords
 
