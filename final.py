@@ -76,11 +76,11 @@ data['text'] = data['text'].apply(punctuation_removal)
 DATA EXPLORATION/PROCESSING
 """
 
-# Simple NLP stopwords functionality to remove filler words
+# Simple NLP stopwords functionality to remove filler words278
 # Increases accuracy and reduces time
 stop = stopwords.words('english')
 data['text'] = data['text'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stop)]))
-X_train, X_test, y_train, y_test = train_test_split(data['text'], data.target, test_size=0.9, random_state=1)
+X_train, X_test, y_train, y_test = train_test_split(data['text'], data.target, test_size=0.2, random_state=1)
 
 """
 MODELS and EVALUATION METRICS
@@ -100,6 +100,14 @@ print("F1 Score [Neural Network]: {}%".format(
 
 # (PLACE CONFUSION MATRIX HERE TO CHECK FOR NEURAL NETWORK MODEL)
 
+# CONFUSION MATRIX (uncomment if needed)
+mat = confusion_matrix(y_test, prediction)
+plt.figure(figsize=(3, 3))
+sns.heatmap(mat, annot=True, fmt='d', cmap="gray", cbar=False)
+plt.xlabel('Predicted Label')
+plt.ylabel('True Label')
+plt.show()
+
 # Decision Tree MODEL
 base = Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('model', DecisionTreeClassifier(criterion='gini', max_depth=15, splitter='random', random_state=80))])
 model = base.fit(X_train, y_train)
@@ -115,10 +123,4 @@ print("F1 Score [Decision Tree]: {}%".format(
 # RUNTIME Calculation
 print("--- RUNTIME: %s seconds ---" % (time.time() - start_time))
 
-# # CONFUSION MATRIX (uncomment if needed)
-# mat = confusion_matrix(y_test, prediction)
-# plt.figure(figsize=(3, 3))
-# sns.heatmap(mat, annot=True, fmt='d', cmap="gray", cbar=False)
-# plt.xlabel('Predicted Label')
-# plt.ylabel('True Label')
-# plt.show()
+
